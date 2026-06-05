@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>UPL — Suivi des Stages</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary: #0F2044;
+  --accent: #2563EB;
+  --green: #10B981;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --light: #F0F5FF;
+  --card: #ffffff;
+  --border: #E2E8F0;
+  --text: #0F2044;
+  --muted: #64748B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--text); min-height:100vh; }
+
+/* NAV */
+nav {
+  background:var(--primary); padding:0 1.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px; position:sticky; top:0; z-index:200;
+  box-shadow:0 2px 20px rgba(0,0,0,0.25);
+}
+.nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:white; }
+.nav-logo span { color:#60A5FA; }
+.nav-tabs { display:flex; gap:4px; }
+.nav-tab {
+  padding:7px 14px; border-radius:8px; border:none;
+  background:transparent; color:rgba(255,255,255,0.55);
+  font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:500;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.nav-tab:hover { background:rgba(255,255,255,0.1); color:white; }
+.nav-tab.active { background:#2563EB; color:white; }
+.nav-badge { background:#10B981; color:white; font-size:0.68rem; padding:2px 6px; border-radius:20px; margin-left:5px; font-weight:700; }
+
+.page { display:none; }
+.page.active { display:block; }
+
+/* ===== DASHBOARD ===== */
+.dash { padding:1.5rem; max-width:1400px; margin:0 auto; }
+.dash-head { margin-bottom:1.5rem; }
+.dash-head h1 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; }
+.dash-head p { color:var(--muted); font-size:0.85rem; margin-top:4px; }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:2rem; }
+.stat { background:white; border-radius:14px; padding:1.3rem; border:1px solid var(--border); position:relative; overflow:hidden; }
+.stat::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; }
+.stat.blue::before{background:#2563EB;} .stat.green::before{background:#10B981;}
+.stat.amber::before{background:#F59E0B;} .stat.red::before{background:#EF4444;}
+.stat-label { font-size:0.72rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+.stat-val { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; line-height:1; }
+.stat-sub { font-size:0.75rem; color:var(--muted); margin-top:5px; }
+
+/* Section titre */
+.section-title {
+  font-family:'Syne',sans-serif; font-size:1rem; font-weight:800;
+  color:var(--primary); margin:2rem 0 1rem;
+  padding-bottom:8px; border-bottom:2px solid var(--border);
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Grille graphiques */
+.charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:1.2rem; margin-bottom:1.5rem; }
+
+.chart-card {
+  background:white; border-radius:14px; padding:1.4rem;
+  border:1px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,0.04);
+}
+.chart-card .ch-head { margin-bottom:1rem; }
+.chart-card .ch-num { font-size:0.7rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.chart-card .ch-title { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; color:var(--primary); line-height:1.4; }
+canvas { max-height:210px; }
+
+/* Table */
+.table-card { background:white; border-radius:14px; padding:1.4rem; border:1px solid var(--border); margin-bottom:1.5rem; }
+.table-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
+.table-head h3 { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
+.btns-row { display:flex; gap:8px; }
+.btn-exp { background:var(--primary); color:white; border:none; padding:7px 14px; border-radius:8px; font-size:0.8rem; font-family:'DM Sans',sans-serif; cursor:pointer; font-weight:500; }
+.btn-clr { background:#FEF2F2; color:#EF4444; border:1px solid #FECACA; padding:7px 14px; border-radius:8px; font-size:0.8rem; font-family:'DM Sans',sans-serif; cursor:pointer; }
+.tbl-wrap { overflow-x:auto; }
+.tbl { width:100%; border-collapse:collapse; font-size:0.78rem; min-width:900px; }
+.tbl th { text-align:left; padding:9px 11px; background:var(--light); color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; white-space:nowrap; }
+.tbl td { padding:9px 11px; border-bottom:1px solid var(--border); white-space:nowrap; max-width:140px; overflow:hidden; text-overflow:ellipsis; }
+.tbl tr:hover td { background:#F8FAFF; }
+.badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:0.7rem; font-weight:600; }
+.bg { background:#D1FAE5; color:#065F46; } .bb { background:#DBEAFE; color:#1E40AF; }
+.empty { text-align:center; padding:3rem; color:var(--muted); }
+.empty .icon { font-size:2.5rem; margin-bottom:1rem; }
+
+/* ===== QUESTIONNAIRE ===== */
+.quiz-wrap {
+  min-height:calc(100vh - 60px);
+  background:linear-gradient(135deg,#0F2044 0%,#1a3a6e 50%,#0F2044 100%);
+  padding:2rem 1rem 4rem; display:flex; flex-direction:column; align-items:center;
+}
+.quiz-top { text-align:center; max-width:580px; width:100%; margin-bottom:2rem; }
+.quiz-badge { display:inline-block; background:rgba(96,165,250,0.15); border:1px solid rgba(96,165,250,0.3); color:#93C5FD; font-size:0.75rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:1rem; }
+.quiz-top h1 { font-family:'Syne',sans-serif; font-size:clamp(1.3rem,4vw,1.8rem); font-weight:800; color:white; margin-bottom:8px; line-height:1.3; }
+.quiz-top p { color:rgba(255,255,255,0.6); font-size:0.88rem; line-height:1.6; }
+.progress-wrap { max-width:580px; width:100%; margin-bottom:1.5rem; }
+.progress-bar { background:rgba(255,255,255,0.1); border-radius:10px; height:6px; overflow:hidden; }
+.progress-fill { background:linear-gradient(90deg,#2563EB,#10B981); height:100%; border-radius:10px; transition:width 0.5s ease; }
+.progress-info { display:flex; justify-content:space-between; color:rgba(255,255,255,0.5); font-size:0.75rem; margin-top:6px; }
+.q-card { max-width:580px; width:100%; background:white; border-radius:20px; padding:1.8rem; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:fadeUp 0.35s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.q-meta { display:flex; align-items:center; gap:10px; margin-bottom:1rem; }
+.q-num { background:#EFF6FF; color:#2563EB; font-size:0.72rem; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; }
+.q-text { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; color:var(--primary); margin-bottom:0.5rem; line-height:1.5; }
+.q-explain { font-size:0.82rem; color:var(--muted); margin-bottom:1.4rem; line-height:1.6; padding:10px 14px; background:#F8FAFC; border-left:3px solid #BFDBFE; border-radius:0 8px 8px 0; }
+.options { display:flex; flex-direction:column; gap:8px; }
+.opt { display:flex; align-items:center; gap:12px; padding:12px 16px; border:2px solid var(--border); border-radius:12px; background:white; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.88rem; color:var(--text); transition:all 0.15s; text-align:left; width:100%; }
+.opt:hover { border-color:#93C5FD; background:#EFF6FF; transform:translateX(3px); }
+.opt.sel { border-color:#2563EB; background:#DBEAFE; color:#1E40AF; font-weight:500; }
+.opt-dot { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; transition:all 0.15s; }
+.opt.sel .opt-dot { background:#2563EB; border-color:#2563EB; box-shadow:0 0 0 3px rgba(37,99,235,0.2); }
+.quiz-btns { display:flex; gap:10px; max-width:580px; width:100%; margin-top:1rem; }
+.btn-prev { flex:1; padding:13px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500; cursor:pointer; transition:all 0.2s; }
+.btn-prev:hover { background:rgba(255,255,255,0.15); }
+.btn-next { flex:2.5; padding:13px; border:none; border-radius:12px; background:linear-gradient(135deg,#2563EB,#1D4ED8); color:white; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px rgba(37,99,235,0.4); }
+.btn-next:hover { transform:translateY(-2px); }
+.btn-next:disabled { background:#334155; color:#64748B; box-shadow:none; transform:none; cursor:not-allowed; }
+.result-box { max-width:480px; width:100%; background:white; border-radius:24px; padding:2.5rem; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); display:none; animation:fadeUp 0.4s ease; }
+.result-box.show { display:block; }
+.result-emoji { font-size:4rem; margin-bottom:1rem; animation:pop 0.5s ease; }
+@keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+.result-box h2 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#10B981; margin-bottom:8px; }
+.result-box p { color:var(--muted); font-size:0.88rem; line-height:1.6; margin-bottom:1.5rem; }
+.btn-restart { background:linear-gradient(135deg,#10B981,#059669); color:white; border:none; padding:13px 32px; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; }
+
+/* ===== QR ===== */
+.qr-wrap { max-width:480px; margin:2.5rem auto; padding:1.5rem; text-align:center; }
+.qr-wrap h2 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:6px; }
+.qr-wrap p { color:var(--muted); font-size:0.85rem; margin-bottom:2rem; line-height:1.6; }
+#qr-box { background:white; border-radius:20px; padding:1.8rem; display:inline-block; border:1px solid var(--border); box-shadow:0 8px 40px rgba(0,0,0,0.1); margin-bottom:1.2rem; }
+#qr-box canvas,#qr-box img { display:block!important; }
+.qr-info { background:#EFF6FF; border-radius:12px; padding:1rem; font-size:0.82rem; color:#1E40AF; line-height:1.6; }
+.btn-dl { background:#10B981; color:white; border:none; padding:12px 28px; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; margin-top:1rem; display:inline-block; }
+
+@media(max-width:640px) {
+  .nav-tab { padding:6px 9px; font-size:0.73rem; }
+  .charts-grid { grid-template-columns:1fr; }
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .dash { padding:1rem; }
+  .q-card { padding:1.4rem; }
+  .quiz-btns { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">UPL <span>Stage</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="showPage('quiz',this)">📱 Questionnaire</button>
+    <button class="nav-tab active" onclick="showPage('dash',this)">📊 Dashboard <span class="nav-badge" id="cnt">0</span></button>
+    <button class="nav-tab" onclick="showPage('qr',this)">🔳 QR Code</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="page-dash" class="page active">
+  <div class="dash">
+    <div class="dash-head">
+      <h1>Tableau de bord — Suivi des Stages UPL</h1>
+      <p>Résultats complets du questionnaire — toutes les 15 questions</p>
+    </div>
+
+    <!-- Stats globales -->
+    <div class="stats">
+      <div class="stat blue"><div class="stat-label">Réponses totales</div><div class="stat-val" id="s1">0</div><div class="stat-sub">étudiants</div></div>
+      <div class="stat green"><div class="stat-label">Ont fait un stage</div><div class="stat-val" id="s2">—</div><div class="stat-sub">Q1 — Oui</div></div>
+      <div class="stat amber"><div class="stat-label">Pro plateforme</div><div class="stat-val" id="s3">—</div><div class="stat-sub">Q10 — Très utile/Utile</div></div>
+      <div class="stat red"><div class="stat-label">Pb communication</div><div class="stat-val" id="s4">—</div><div class="stat-sub">Q6 — Manque comm.</div></div>
+    </div>
+
+    <!-- Toutes les questions -->
+    <div class="section-title">📊 Résultats par question</div>
+    <div class="charts-grid" id="all-charts"></div>
+
+    <!-- Table -->
+    <div class="section-title">📋 Réponses individuelles</div>
+    <div class="table-card">
+      <div class="table-head">
+        <h3>Détail des réponses</h3>
+        <div class="btns-row">
+          <button class="btn-exp" onclick="exportCSV()">⬇ Exporter CSV</button>
+          <button class="btn-clr" onclick="clearAll()">🗑 Effacer</button>
+        </div>
+      </div>
+      <div class="tbl-wrap" id="tbl-wrap">
+        <div class="empty"><div class="icon">📋</div><p>Aucune réponse encore.<br>Utilisez l'onglet <strong>Questionnaire</strong> ou partagez le QR code.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUESTIONNAIRE -->
+<div id="page-quiz" class="page">
+  <div class="quiz-wrap">
+    <div class="quiz-top">
+      <div class="quiz-badge">🎓 Université Privée de Lomé — UPL</div>
+      <h1>Questionnaire sur le Suivi des Stages</h1>
+      <p>Dans le cadre d'une proposition de solution numérique de suivi des stages. Vos réponses sont anonymes et précieuses.</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+      <div class="progress-info"><span id="ptxt">Question 1 / 15</span><span id="ppct">0%</span></div>
+    </div>
+    <div class="q-card" id="qcard"></div>
+    <div class="quiz-btns" id="quiz-btns">
+      <button class="btn-prev" id="bprev" onclick="prevQ()">← Précédent</button>
+      <button class="btn-next" id="bnext" onclick="nextQ()">Suivant →</button>
+    </div>
+    <div class="result-box" id="result">
+      <div class="result-emoji">🎉</div>
+      <h2>Merci pour votre participation !</h2>
+      <p>Vos réponses ont bien été enregistrées et sont visibles sur le tableau de bord.</p>
+      <button class="btn-restart" onclick="restart()">↺ Répondre à nouveau</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR CODE -->
+<div id="page-qr" class="page">
+  <div class="qr-wrap">
+    <h2>🔳 QR Code du questionnaire</h2>
+    <p>Imprimez ce QR code et affichez-le à l'UPL. Les étudiants le scannent et répondent directement depuis leur téléphone.</p>
+    <div id="qr-box"></div>
+    <div class="qr-info">📌 Le QR code ouvre directement l'onglet <strong>Questionnaire</strong>.<br>Fonctionne sur tous les téléphones, sans application à installer.</div><br>
+    <button class="btn-dl" onclick="dlQR()">⬇ Télécharger PNG</button>
+  </div>
+</div>
+
+<script>
+const QS = [
+  { q:"Avez-vous déjà effectué un stage académique ?", ex:"Détermine si vous avez une expérience directe du système de stage de l'UPL.", opts:["Oui","Non"] },
+  { q:"Pendant votre stage, l'entreprise semblait-elle informée des exigences et objectifs fixés par l'UPL ?", ex:"Évalue si l'UPL communique suffisamment ses attentes académiques aux entreprises d'accueil.", opts:["Tout à fait","En grande partie","Moyennement","Peu","Pas du tout"] },
+  { q:"L'UPL a-t-elle assuré un suivi de votre stage auprès de l'entreprise ?", ex:"Mesure la fréquence à laquelle l'UPL a effectué des visites ou pris contact avec l'entreprise.", opts:["Régulièrement","Occasionnellement","Rarement","Jamais"] },
+  { q:"Quel moyen utilisez-vous le plus pour communiquer avec votre encadreur ?", ex:"Identifier le canal dominant permet de proposer des outils adaptés aux habitudes réelles.", opts:["Téléphone","WhatsApp","E-mail","Rencontre physique","Autre"] },
+  { q:"Avez-vous constaté des retards dans la transmission des informations entre l'UPL et l'entreprise ?", ex:"Mesure la fréquence des retards qui peuvent impacter la qualité du stage.", opts:["Très souvent","Souvent","Rarement","Jamais"] },
+  { q:"Quels sont les principaux problèmes rencontrés lors du suivi de stage ?", ex:"Identifie les obstacles les plus fréquents pour cibler les fonctionnalités prioritaires.", opts:["Manque de communication","Retard des réponses","Absence de visites","Difficulté d'accès aux documents","Aucun problème"] },
+  { q:"Combien de fois avez-vous été visité ou contacté officiellement par votre encadreur durant le stage ?", ex:"Évalue concrètement l'intensité du suivi officiel fourni par l'encadreur académique.", opts:["Aucune fois","Une fois","Deux fois","Trois fois ou plus"] },
+  { q:"L'entreprise transmettait-elle régulièrement votre évolution à l'UPL ?", ex:"Évalue le rôle de l'entreprise dans la communication bidirectionnelle du suivi.", opts:["Toujours","Souvent","Rarement","Jamais","Je ne sais pas"] },
+  { q:"Quel support préférez-vous pour le suivi de votre stage ?", ex:"Connaître la préférence technologique guide le choix de la solution à développer.", opts:["Application mobile","Site web","Courrier électronique","Documents papier"] },
+  { q:"Une plateforme numérique de suivi des stages serait-elle utile ?", ex:"Mesure directement l'adhésion des étudiants à l'idée d'une solution numérique.", opts:["Très utile","Utile","Peu utile","Inutile"] },
+  { q:"Quels services souhaiteriez-vous retrouver dans une solution numérique de suivi ?", ex:"Les fonctionnalités souhaitées guideront la conception et les priorités de développement.", opts:["Dépôt des rapports","Messagerie avec l'encadreur","Notifications","Évaluation en ligne","Toutes les réponses ci-dessus"] },
+  { q:"Comment évaluez-vous la transmission des informations entre l'UPL et l'entreprise d'accueil ?", ex:"Évaluation globale de la qualité de communication institutionnelle vue par l'étudiant.", opts:["Très satisfaisante","Satisfaisante","Moyenne","Insatisfaisante","Très insatisfaisante"] },
+  { q:"Souhaiteriez-vous recevoir des notifications concernant l'évolution de votre dossier de stage ?", ex:"Les notifications automatiques réduisent les incertitudes et améliorent l'expérience.", opts:["Oui","Non"] },
+  { q:"Une meilleure communication entre l'UPL et l'entreprise améliorerait-elle la qualité des stages ?", ex:"Explore le lien direct entre communication institutionnelle et qualité du stage.", opts:["Tout à fait d'accord","D'accord","Neutre","Pas d'accord","Pas du tout d'accord"] },
+  { q:"Recommanderiez-vous la mise en place d'un système informatisé de suivi des stages à l'UPL ?", ex:"Mesure l'adhésion globale des étudiants à la mise en place d'un système numérique.", opts:["Certainement","Probablement","Peut-être","Probablement pas","Certainement pas"] }
+];
+
+let cur=0, ans=Array(15).fill(null);
+let data=JSON.parse(localStorage.getItem('upl_r')||'[]');
+const COLS=['#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#F97316'];
+let CH={};
+
+// ===== QUIZ =====
+function renderQ(){
+  const q=QS[cur];
+  const pct=Math.round(cur/QS.length*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ptxt').textContent=`Question ${cur+1} / ${QS.length}`;
+  document.getElementById('ppct').textContent=pct+'%';
+  document.getElementById('qcard').innerHTML=`
+    <div class="q-meta"><span class="q-num">Question ${cur+1} / ${QS.length}</span></div>
+    <div class="q-text">${q.q}</div>
+    <div class="q-explain">ℹ️ ${q.ex}</div>
+    <div class="options">${q.opts.map(o=>`
+      <button class="opt ${ans[cur]===o?'sel':''}" onclick="pick(this,'${o.replace(/'/g,"\\'")}')">
+        <div class="opt-dot"></div>${o}
+      </button>`).join('')}
+    </div>`;
+  document.getElementById('bprev').style.display=cur===0?'none':'block';
+  const bn=document.getElementById('bnext');
+  bn.textContent=cur===QS.length-1?'✅ Soumettre':'Suivant →';
+  bn.disabled=!ans[cur];
+}
+
+function pick(el,v){
+  ans[cur]=v;
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('bnext').disabled=false;
+}
+
+function nextQ(){ if(!ans[cur])return; if(cur<QS.length-1){cur++;renderQ();}else submit(); }
+function prevQ(){ if(cur>0){cur--;renderQ();} }
+
+function submit(){
+  const r={id:Date.now(),date:new Date().toLocaleDateString('fr-FR'),time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),a:[...ans]};
+  data.push(r);
+  localStorage.setItem('upl_r',JSON.stringify(data));
+  document.getElementById('qcard').style.display='none';
+  document.getElementById('quiz-btns').style.display='none';
+  document.querySelector('.progress-wrap').style.display='none';
+  document.getElementById('result').classList.add('show');
+  updateDash();
+}
+
+function restart(){
+  cur=0; ans=Array(15).fill(null);
+  document.getElementById('qcard').style.display='block';
+  document.getElementById('quiz-btns').style.display='flex';
+  document.querySelector('.progress-wrap').style.display='block';
+  document.getElementById('result').classList.remove('show');
+  renderQ();
+}
+
+// ===== DASHBOARD =====
+function buildCharts(){
+  const container=document.getElementById('all-charts');
+  container.innerHTML='';
+  QS.forEach((_,i)=>{
+    const div=document.createElement('div');
+    div.className='chart-card';
+    div.innerHTML=`
+      <div class="ch-head">
+        <div class="ch-num">Question ${i+1}</div>
+        <div class="ch-title">${QS[i].q}</div>
+      </div>
+      <canvas id="ch${i}"></canvas>`;
+    container.appendChild(div);
+  });
+}
+
+function updateDash(){
+  const n=data.length;
+  document.getElementById('s1').textContent=n;
+  document.getElementById('cnt').textContent=n;
+
+  if(!n){
+    ['s2','s3','s4'].forEach(id=>document.getElementById(id).textContent='—');
+    renderEmpty();
+    // Vider les graphiques
+    QS.forEach((_,i)=>{ if(CH[i]){CH[i].destroy();CH[i]=null;} });
+    return;
+  }
+
+  document.getElementById('s2').textContent=Math.round(data.filter(r=>r.a[0]==='Oui').length/n*100)+'%';
+  document.getElementById('s3').textContent=Math.round(data.filter(r=>['Très utile','Utile'].includes(r.a[9])).length/n*100)+'%';
+  document.getElementById('s4').textContent=Math.round(data.filter(r=>r.a[5]==='Manque de communication').length/n*100)+'%';
+
+  // Graphiques pour toutes les 15 questions
+  QS.forEach((q,i)=>{
+    const counts=q.opts.map(o=>data.filter(r=>r.a[i]===o).length);
+    const useBar=q.opts.length>=4;
+    if(CH[i])CH[i].destroy();
+    const ctx=document.getElementById('ch'+i);
+    if(!ctx)return;
+    CH[i]=new Chart(ctx.getContext('2d'),{
+      type:useBar?'bar':'doughnut',
+      data:{
+        labels:q.opts,
+        datasets:[{
+          data:counts,
+          backgroundColor:useBar?COLS[i%COLS.length]:COLS,
+          borderRadius:useBar?8:0,
+          borderWidth:useBar?0:3,
+          borderColor:'#fff'
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:true,
+        plugins:{
+          legend:{display:!useBar,position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}
+        },
+        scales:useBar?{
+          y:{beginAtZero:true,ticks:{stepSize:1,font:{family:'DM Sans',size:11}},grid:{color:'#F0F5FF'}},
+          x:{ticks:{font:{family:'DM Sans',size:10},maxRotation:30},grid:{display:false}}
+        }:{}
+      }
+    });
+  });
+
+  renderTable();
+}
+
+function renderEmpty(){
+  document.getElementById('tbl-wrap').innerHTML='<div class="empty"><div class="icon">📋</div><p>Aucune réponse encore.<br>Utilisez l\'onglet <strong>Questionnaire</strong> ou partagez le QR code.</p></div>';
+}
+
+function renderTable(){
+  if(!data.length){renderEmpty();return;}
+  document.getElementById('tbl-wrap').innerHTML=`
+    <table class="tbl">
+      <thead><tr>
+        <th>#</th><th>Date</th><th>Heure</th>
+        ${QS.map((_,i)=>`<th>Q${i+1}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${data.map((r,i)=>`<tr>
+          <td>${i+1}</td><td>${r.date}</td><td>${r.time}</td>
+          ${r.a.map((v,j)=>`<td title="${v||''}">${v||'—'}</td>`).join('')}
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function clearAll(){
+  if(!confirm('Effacer toutes les réponses ? Irréversible.'))return;
+  data=[]; localStorage.removeItem('upl_r'); updateDash();
+}
+
+function exportCSV(){
+  if(!data.length){alert('Aucune donnée.');return;}
+  const h=['#','Date','Heure',...QS.map((_,i)=>`"Q${i+1} - ${QS[i].q.substring(0,40)}"`)].join(',');
+  const rows=data.map((r,i)=>[i+1,r.date,r.time,...r.a.map(v=>`"${v||''}"`)].join(','));
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([[h,...rows].join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download='upl_stages_resultats.csv'; a.click();
+}
+
+// ===== QR =====
+function genQR(){
+  const url=window.location.href.split('?')[0]+'?tab=quiz';
+  document.getElementById('qr-box').innerHTML='';
+  new QRCode(document.getElementById('qr-box'),{text:url,width:220,height:220,colorDark:'#0F2044',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+}
+function dlQR(){
+  setTimeout(()=>{
+    const c=document.querySelector('#qr-box canvas');
+    if(c){const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='qr_upl_stage.png';a.click();}
+  },400);
+}
+
+// ===== NAV =====
+function showPage(p,btn){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(p==='qr')genQR();
+  if(p==='dash')updateDash();
+}
+
+// ===== INIT =====
+buildCharts();
+updateDash();
+renderQ();
+const urlP=new URLSearchParams(window.location.search);
+if(urlP.get('tab')==='quiz') showPage('quiz',document.querySelectorAll('.nav-tab')[0]);
+</script>
+</body>
+</html>
