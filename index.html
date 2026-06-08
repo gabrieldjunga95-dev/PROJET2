@@ -5,344 +5,406 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0F2044">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UPL Stage">
 <title>UPL — Suivi des Stages</title>
-<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
   --primary: #0F2044;
+  --primary2: #1a3a6e;
   --accent: #2563EB;
+  --accent2: #1D4ED8;
+  --gold: #F59E0B;
   --green: #10B981;
-  --amber: #F59E0B;
   --red: #EF4444;
   --light: #F0F5FF;
-  --card: #ffffff;
   --border: #E2E8F0;
   --text: #0F2044;
   --muted: #64748B;
+  --card: #ffffff;
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html,body { height:100%; font-family:'DM Sans',sans-serif; background:var(--light); color:var(--text); overflow-x:hidden; }
+html, body { height:100%; font-family:'DM Sans', sans-serif; background:var(--light); color:var(--text); overflow-x:hidden; }
 
-/* ===== ÉCRANS ===== */
 .screen { display:none; min-height:100vh; }
 .screen.active { display:flex; flex-direction:column; }
 
-/* ===== ÉCRAN LOGIN ADMIN ===== */
+/* ===== HEADER UPL ===== */
+.upl-header {
+  background:var(--primary);
+  padding:0.9rem 1.4rem;
+  display:flex; align-items:center; gap:1rem;
+  border-bottom:3px solid var(--gold);
+  flex-shrink:0;
+}
+.upl-logo-circle {
+  width:52px; height:52px; border-radius:50%;
+  background:white; display:flex; align-items:center; justify-content:center;
+  font-size:1rem; font-weight:900; color:var(--primary);
+  border:3px solid var(--gold); flex-shrink:0;
+  font-family:'Syne', sans-serif; letter-spacing:-1px;
+}
+.upl-header-txt h1 {
+  font-family:'Syne', sans-serif;
+  font-size:0.95rem; font-weight:800; color:white; line-height:1.3;
+}
+.upl-header-txt p { font-size:0.73rem; color:rgba(255,255,255,0.65); margin-top:2px; }
+
+/* ===== LOGIN ADMIN ===== */
 #screen-login {
-  background:linear-gradient(135deg,#0F2044 0%,#1a3a6e 100%);
-  align-items:center; justify-content:center; padding:2rem;
+  background:linear-gradient(160deg, var(--primary) 0%, var(--primary2) 100%);
+  align-items:center; justify-content:center; padding:2rem 1.5rem;
 }
 .login-box {
-  background:white; border-radius:24px; padding:2.5rem 2rem;
+  background:white; border-radius:20px; padding:2.5rem 2rem;
   width:100%; max-width:380px; text-align:center;
   box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  border-top:4px solid var(--gold);
 }
-.login-logo { font-size:3rem; margin-bottom:1rem; }
-.login-box h2 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:6px; }
-.login-box p { color:var(--muted); font-size:0.85rem; margin-bottom:2rem; }
-.input-wrap { position:relative; margin-bottom:1rem; }
-.input-wrap input {
-  width:100%; padding:14px 16px; border:2px solid var(--border);
-  border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.95rem;
-  outline:none; transition:border 0.2s; background:#F8FAFC;
+.login-icon { font-size:3rem; margin-bottom:0.8rem; }
+.login-box h2 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:4px; }
+.login-box p { color:var(--muted); font-size:0.85rem; margin-bottom:1.8rem; }
+.f-label { text-align:left; font-size:0.8rem; font-weight:600; color:var(--primary); margin-bottom:6px; display:block; }
+.f-input {
+  width:100%; padding:13px 16px; border:2px solid var(--border);
+  border-radius:12px; font-family:'DM Sans',sans-serif; font-size:1rem;
+  outline:none; transition:border 0.2s; background:#F8FAFC; margin-bottom:1.2rem; color:var(--text);
 }
-.input-wrap input:focus { border-color:var(--accent); background:white; }
-.btn-login {
-  width:100%; padding:14px; background:linear-gradient(135deg,#2563EB,#1D4ED8);
-  color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif;
-  font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s;
-  box-shadow:0 4px 14px rgba(37,99,235,0.4);
+.f-input:focus { border-color:var(--accent); background:white; }
+.btn-main {
+  width:100%; padding:14px; background:linear-gradient(135deg, var(--accent), var(--accent2));
+  color:white; border:none; border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600;
+  cursor:pointer; transition:all 0.2s; box-shadow:0 4px 16px rgba(37,99,235,0.4);
 }
-.btn-login:hover { transform:translateY(-2px); }
-.login-err { color:var(--red); font-size:0.82rem; margin-top:8px; display:none; }
+.btn-main:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,99,235,0.5); }
+.err { color:var(--red); font-size:0.82rem; margin-top:8px; display:none; }
 
 /* ===== ACCUEIL ÉTUDIANT ===== */
-#screen-welcome {
-  background:linear-gradient(135deg,#0F2044 0%,#1a3a6e 60%,#0F2044 100%);
+#screen-welcome { background:linear-gradient(160deg, var(--primary) 0%, var(--primary2) 100%); }
+.welcome-body {
+  flex:1; display:flex; flex-direction:column;
   align-items:center; justify-content:center; padding:2rem 1.5rem;
 }
 .welcome-card {
-  background:white; border-radius:24px; padding:2.5rem 2rem;
-  width:100%; max-width:420px; text-align:center;
+  background:white; border-radius:24px; padding:2.2rem 2rem;
+  width:100%; max-width:460px; text-align:center;
   box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  border-top:4px solid var(--gold);
 }
-.welcome-badge {
-  display:inline-block; background:#EFF6FF; color:#2563EB;
-  font-size:0.72rem; font-weight:700; letter-spacing:1px;
-  text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:1.2rem;
-}
-.welcome-card h1 { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:8px; line-height:1.4; }
-.welcome-card p { color:var(--muted); font-size:0.85rem; line-height:1.6; margin-bottom:1.8rem; }
+.welcome-icon { font-size:3.5rem; margin-bottom:1rem; }
+.welcome-card h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:var(--primary); margin-bottom:8px; line-height:1.4; }
+.welcome-card .desc { color:var(--muted); font-size:0.86rem; line-height:1.7; margin-bottom:1.5rem; }
+.info-pills { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
+.pill { background:var(--light); color:var(--accent); font-size:0.72rem; font-weight:600; padding:5px 12px; border-radius:20px; border:1px solid var(--border); }
+.divider { border:none; border-top:1px solid var(--border); margin:1.2rem 0; }
+.num-label { font-size:0.85rem; font-weight:600; color:var(--primary); margin-bottom:8px; text-align:left; display:block; }
 .num-input {
   width:100%; padding:14px 16px; border:2px solid var(--border);
   border-radius:12px; font-family:'DM Sans',sans-serif; font-size:1rem;
-  outline:none; transition:border 0.2s; background:#F8FAFC; margin-bottom:1rem;
-  text-align:center; letter-spacing:2px; font-weight:600;
+  outline:none; transition:border 0.2s; background:#F8FAFC;
+  text-align:center; letter-spacing:2px; font-weight:700; margin-bottom:1rem; color:var(--text);
 }
 .num-input:focus { border-color:var(--accent); background:white; }
 .btn-start {
-  width:100%; padding:14px; background:linear-gradient(135deg,#2563EB,#1D4ED8);
-  color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif;
-  font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s;
-  box-shadow:0 4px 14px rgba(37,99,235,0.4);
+  width:100%; padding:14px; background:linear-gradient(135deg, var(--accent), var(--accent2));
+  color:white; border:none; border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s; box-shadow:0 4px 16px rgba(37,99,235,0.4);
 }
 .btn-start:hover { transform:translateY(-2px); }
 .welcome-err { color:var(--red); font-size:0.82rem; margin-top:8px; display:none; }
 
-/* Déjà répondu */
-.already-box {
+.already-card {
   background:white; border-radius:24px; padding:2.5rem 2rem;
   width:100%; max-width:380px; text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.4); display:none;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  border-top:4px solid var(--gold); display:none;
 }
-.already-box .icon { font-size:3.5rem; margin-bottom:1rem; }
-.already-box h2 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--amber); margin-bottom:8px; }
-.already-box p { color:var(--muted); font-size:0.85rem; line-height:1.6; }
+.already-card .icon { font-size:3.5rem; margin-bottom:1rem; }
+.already-card h2 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--gold); margin-bottom:8px; }
+.already-card p { color:var(--muted); font-size:0.85rem; line-height:1.7; }
 
 /* ===== QUESTIONNAIRE ===== */
-#screen-quiz {
-  background:linear-gradient(135deg,#0F2044 0%,#1a3a6e 100%);
-  padding:1.5rem 1rem 5rem; align-items:center;
+#screen-quiz { background:linear-gradient(180deg, var(--primary) 0%, var(--primary2) 100%); }
+.quiz-topbar {
+  background:rgba(0,0,0,0.2); padding:0.7rem 1.2rem;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,0.1); flex-shrink:0;
 }
-.quiz-header { max-width:560px; width:100%; margin-bottom:1.2rem; text-align:center; }
-.quiz-header h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:white; margin-bottom:4px; }
-.quiz-header p { color:rgba(255,255,255,0.5); font-size:0.78rem; }
-.prog-bar { background:rgba(255,255,255,0.1); border-radius:10px; height:5px; overflow:hidden; max-width:560px; width:100%; margin-bottom:4px; }
-.prog-fill { background:linear-gradient(90deg,#2563EB,#10B981); height:100%; border-radius:10px; transition:width 0.5s ease; }
-.prog-info { display:flex; justify-content:space-between; color:rgba(255,255,255,0.45); font-size:0.73rem; max-width:560px; width:100%; margin-bottom:1.2rem; }
+.quiz-student { color:rgba(255,255,255,0.75); font-size:0.8rem; }
+.quiz-counter { color:var(--gold); font-weight:700; font-size:0.85rem; }
+.prog-area { background:rgba(0,0,0,0.15); padding:0.6rem 1.2rem 0.8rem; flex-shrink:0; }
+.prog-bar { background:rgba(255,255,255,0.12); border-radius:10px; height:6px; overflow:hidden; }
+.prog-fill { background:linear-gradient(90deg, var(--accent), var(--green)); height:100%; border-radius:10px; transition:width 0.5s ease; }
+.prog-pct { color:rgba(255,255,255,0.45); font-size:0.72rem; margin-top:4px; text-align:right; }
 
+.quiz-body { flex:1; overflow-y:auto; padding:1rem 1rem 3rem; display:flex; flex-direction:column; align-items:center; gap:1rem; }
 .q-card {
   max-width:560px; width:100%; background:white; border-radius:20px;
-  padding:1.6rem; box-shadow:0 20px 50px rgba(0,0,0,0.3);
-  animation:fadeUp 0.3s ease;
+  padding:1.6rem; box-shadow:0 16px 48px rgba(0,0,0,0.35);
+  border-top:3px solid var(--gold); animation:fadeUp 0.3s ease;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.q-num-tag { background:#EFF6FF; color:#2563EB; font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:10px; text-transform:uppercase; }
-.q-text { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:8px; line-height:1.5; }
-.q-exp { font-size:0.8rem; color:var(--muted); margin-bottom:1.2rem; line-height:1.6; padding:9px 13px; background:#F8FAFC; border-left:3px solid #BFDBFE; border-radius:0 8px 8px 0; }
+.q-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--light); color:var(--accent); font-size:0.7rem; font-weight:700;
+  padding:4px 10px; border-radius:20px; margin-bottom:10px; border:1px solid var(--border);
+  text-transform:uppercase; letter-spacing:0.5px;
+}
+.q-text { font-family:'Syne',sans-serif; font-size:1.02rem; font-weight:700; color:var(--primary); margin-bottom:8px; line-height:1.55; }
+.q-exp { font-size:0.8rem; color:var(--muted); margin-bottom:1.2rem; line-height:1.7; padding:9px 13px; background:#F8FAFC; border-left:3px solid #BFDBFE; border-radius:0 8px 8px 0; }
 .opts { display:flex; flex-direction:column; gap:7px; }
 .opt {
-  display:flex; align-items:center; gap:11px; padding:11px 14px;
-  border:2px solid var(--border); border-radius:11px; background:white;
-  cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.87rem;
+  display:flex; align-items:center; gap:11px; padding:12px 14px;
+  border:2px solid var(--border); border-radius:12px; background:white;
+  cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.88rem;
   color:var(--text); transition:all 0.15s; text-align:left; width:100%;
 }
+.opt:hover { border-color:#93C5FD; background:#EFF6FF; transform:translateX(3px); }
 .opt:active { transform:scale(0.98); }
-.opt.sel { border-color:#2563EB; background:#DBEAFE; color:#1E40AF; font-weight:500; }
-.opt-dot { width:17px; height:17px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; }
-.opt.sel .opt-dot { background:#2563EB; border-color:#2563EB; box-shadow:0 0 0 3px rgba(37,99,235,0.2); }
+.opt.sel { border-color:var(--accent); background:#DBEAFE; color:#1E40AF; font-weight:600; }
+.opt-dot { width:17px; height:17px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; transition:all 0.15s; }
+.opt.sel .opt-dot { background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,0.2); }
 
-.quiz-nav { display:flex; gap:10px; max-width:560px; width:100%; margin-top:1rem; }
+.quiz-nav { display:flex; gap:10px; max-width:560px; width:100%; }
 .btn-prev {
   flex:1; padding:13px; border:2px solid rgba(255,255,255,0.2); border-radius:12px;
-  background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7);
-  font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500; cursor:pointer;
+  background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.75);
+  font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:500; cursor:pointer; transition:all 0.2s;
 }
+.btn-prev:hover { background:rgba(255,255,255,0.15); }
 .btn-next {
   flex:2.5; padding:13px; border:none; border-radius:12px;
-  background:linear-gradient(135deg,#2563EB,#1D4ED8); color:white;
-  font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600;
-  cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,0.4);
+  background:linear-gradient(135deg, var(--accent), var(--accent2)); color:white;
+  font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px rgba(37,99,235,0.4);
 }
-.btn-next:disabled { background:#334155; color:#64748B; box-shadow:none; cursor:not-allowed; }
+.btn-next:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,99,235,0.5); }
+.btn-next:disabled { background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.3); box-shadow:none; cursor:not-allowed; }
 
-/* Merci */
 .merci-card {
-  max-width:420px; width:100%; background:white; border-radius:24px;
+  max-width:460px; width:100%; background:white; border-radius:24px;
   padding:2.5rem 2rem; text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.3); display:none; animation:fadeUp 0.4s ease;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  border-top:4px solid var(--green); display:none; animation:fadeUp 0.4s ease;
 }
 .merci-card.show { display:block; }
 .merci-icon { font-size:4rem; margin-bottom:1rem; animation:pop 0.5s ease; }
 @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
-.merci-card h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:#10B981; margin-bottom:8px; }
-.merci-card p { color:var(--muted); font-size:0.85rem; line-height:1.6; }
+.merci-card h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:var(--green); margin-bottom:8px; }
+.merci-card p { color:var(--muted); font-size:0.88rem; line-height:1.7; }
 
 /* ===== DASHBOARD ===== */
-#screen-dash { background:var(--light); }
+#screen-dash { background:#F4F6FB; }
 .dash-nav {
   background:var(--primary); padding:0 1.2rem; height:56px;
   display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:100; box-shadow:0 2px 16px rgba(0,0,0,0.3);
+  border-bottom:3px solid var(--gold); position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 16px rgba(0,0,0,0.3);
 }
-.dash-nav .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:white; }
-.dash-nav .logo span { color:#60A5FA; }
-.btn-logout { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); border:none; padding:6px 12px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.78rem; cursor:pointer; }
+.dash-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:white; }
+.dash-logo span { color:var(--gold); }
+.btn-logout { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.75); border:1px solid rgba(255,255,255,0.2); padding:6px 14px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.78rem; cursor:pointer; transition:all 0.2s; }
+.btn-logout:hover { background:rgba(255,255,255,0.18); }
 
-.dash-body { padding:1.2rem; max-width:1300px; margin:0 auto; }
-.dash-title { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:4px; }
+.dash-body { padding:1.4rem; max-width:1300px; margin:0 auto; }
+.dash-title { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:var(--primary); margin-bottom:3px; }
 .dash-sub { color:var(--muted); font-size:0.82rem; margin-bottom:1.5rem; }
 
 .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:0.9rem; margin-bottom:1.5rem; }
-.stat { background:white; border-radius:13px; padding:1.1rem; border:1px solid var(--border); position:relative; overflow:hidden; }
+.stat { background:white; border-radius:14px; padding:1.1rem; border:1px solid var(--border); position:relative; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
 .stat::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; }
-.stat.blue::before{background:#2563EB;} .stat.green::before{background:#10B981;}
-.stat.amber::before{background:#F59E0B;} .stat.red::before{background:#EF4444;}
-.stat-label { font-size:0.68rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
-.stat-val { font-family:'Syne',sans-serif; font-size:1.7rem; font-weight:800; line-height:1; }
+.stat.blue::before{background:var(--accent);} .stat.green::before{background:var(--green);}
+.stat.amber::before{background:var(--gold);} .stat.red::before{background:var(--red);}
+.stat-lbl { font-size:0.68rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
+.stat-val { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; line-height:1; color:var(--primary); }
 .stat-sub { font-size:0.7rem; color:var(--muted); margin-top:4px; }
 
-.sec-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:800; margin:1.5rem 0 1rem; padding-bottom:6px; border-bottom:2px solid var(--border); }
+.sec-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:var(--primary); margin:1.5rem 0 1rem; padding-bottom:7px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
 
-.charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-.chart-card { background:white; border-radius:13px; padding:1.2rem; border:1px solid var(--border); }
+.charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1rem; margin-bottom:1.2rem; }
+.chart-card { background:white; border-radius:14px; padding:1.2rem; border:1px solid var(--border); box-shadow:0 2px 10px rgba(0,0,0,0.04); }
 .ch-qnum { font-size:0.68rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
 .ch-qtxt { font-family:'Syne',sans-serif; font-size:0.83rem; font-weight:700; color:var(--primary); margin-bottom:1rem; line-height:1.4; }
 canvas { max-height:200px; }
 
-.tbl-card { background:white; border-radius:13px; padding:1.2rem; border:1px solid var(--border); margin-bottom:1.5rem; }
+.tbl-card { background:white; border-radius:14px; padding:1.2rem; border:1px solid var(--border); margin-bottom:1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
 .tbl-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
-.tbl-head h3 { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; }
+.tbl-head h3 { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
 .btns { display:flex; gap:8px; }
-.btn-exp { background:var(--primary); color:white; border:none; padding:7px 12px; border-radius:8px; font-size:0.78rem; font-family:'DM Sans',sans-serif; cursor:pointer; }
-.btn-clr { background:#FEF2F2; color:#EF4444; border:1px solid #FECACA; padding:7px 12px; border-radius:8px; font-size:0.78rem; font-family:'DM Sans',sans-serif; cursor:pointer; }
+.btn-exp { background:var(--primary); color:white; border:none; padding:7px 13px; border-radius:8px; font-size:0.78rem; font-family:'DM Sans',sans-serif; cursor:pointer; font-weight:500; }
+.btn-clr { background:#FEF2F2; color:var(--red); border:1px solid #FECACA; padding:7px 13px; border-radius:8px; font-size:0.78rem; font-family:'DM Sans',sans-serif; cursor:pointer; }
 .tbl-wrap { overflow-x:auto; }
-.tbl { width:100%; border-collapse:collapse; font-size:0.75rem; min-width:800px; }
-.tbl th { text-align:left; padding:8px 10px; background:var(--light); color:var(--muted); font-weight:600; font-size:0.68rem; text-transform:uppercase; white-space:nowrap; }
-.tbl td { padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; max-width:130px; overflow:hidden; text-overflow:ellipsis; }
+.tbl { width:100%; border-collapse:collapse; font-size:0.76rem; min-width:800px; }
+.tbl th { text-align:left; padding:9px 10px; background:var(--light); color:var(--muted); font-weight:700; font-size:0.68rem; text-transform:uppercase; white-space:nowrap; border-bottom:2px solid var(--border); }
+.tbl td { padding:9px 10px; border-bottom:1px solid var(--border); white-space:nowrap; max-width:130px; overflow:hidden; text-overflow:ellipsis; }
 .tbl tr:hover td { background:#F8FAFF; }
-.badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:0.68rem; font-weight:600; }
+.badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:0.68rem; font-weight:600; }
 .bg { background:#D1FAE5; color:#065F46; } .bb { background:#DBEAFE; color:#1E40AF; }
-.empty { text-align:center; padding:2.5rem; color:var(--muted); font-size:0.85rem; }
+.empty { text-align:center; padding:2.5rem; color:var(--muted); font-size:0.86rem; }
+.empty-icon { font-size:2.5rem; margin-bottom:0.8rem; }
 
-/* QR dans dashboard */
-.qr-section { background:white; border-radius:13px; padding:1.5rem; border:1px solid var(--border); margin-bottom:1.5rem; text-align:center; }
-.qr-section h3 { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; margin-bottom:8px; }
-.qr-section p { color:var(--muted); font-size:0.8rem; margin-bottom:1.2rem; line-height:1.5; }
-#qr-box { background:white; display:inline-block; padding:1rem; border:1px solid var(--border); border-radius:12px; margin-bottom:1rem; }
+.qr-section { background:white; border-radius:14px; padding:1.5rem; border:1px solid var(--border); margin-bottom:1.5rem; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
+.qr-section h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:6px; color:var(--primary); }
+.qr-section p { color:var(--muted); font-size:0.82rem; margin-bottom:1.2rem; line-height:1.6; }
+#qr-box { background:white; display:inline-block; padding:1rem; border:2px solid var(--primary); border-radius:12px; margin-bottom:1rem; }
 #qr-box canvas,#qr-box img { display:block!important; }
-.btn-dl { background:#10B981; color:white; border:none; padding:10px 22px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:600; cursor:pointer; }
+.qr-url { background:var(--light); border:1px solid var(--border); border-radius:8px; padding:9px 14px; font-size:0.76rem; color:var(--primary); word-break:break-all; margin-bottom:1rem; font-family:monospace; }
+.btn-dl { background:var(--green); color:white; border:none; padding:10px 24px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.btn-dl:hover { background:#059669; }
 
-@media(min-width:640px) {
-  .stats { grid-template-columns:repeat(4,1fr); }
-}
+@media(min-width:640px) { .stats { grid-template-columns:repeat(4,1fr); } }
 </style>
 </head>
 <body>
 
-<!-- ===== LOGIN ADMIN ===== -->
+<!-- LOGIN ADMIN -->
 <div id="screen-login" class="screen">
   <div class="login-box">
-    <div class="login-logo">🔐</div>
-    <h2>Tableau de bord Admin</h2>
-    <p>Entrez le mot de passe pour accéder aux résultats</p>
-    <div class="input-wrap">
-      <input type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
-    </div>
-    <button class="btn-login" onclick="checkPwd()">Accéder au dashboard</button>
-    <div class="login-err" id="login-err">❌ Mot de passe incorrect</div>
+    <div class="login-icon">🔐</div>
+    <h2>Espace Administrateur</h2>
+    <p>Université Privée de Lomé — Suivi des stages</p>
+    <label class="f-label">Mot de passe</label>
+    <input type="password" class="f-input" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+    <button class="btn-main" onclick="checkPwd()">Accéder au tableau de bord</button>
+    <div class="err" id="login-err">❌ Mot de passe incorrect</div>
   </div>
 </div>
 
-<!-- ===== ACCUEIL ÉTUDIANT ===== -->
+<!-- ACCUEIL ÉTUDIANT -->
 <div id="screen-welcome" class="screen active">
-  <div class="welcome-card" id="welcome-form">
-    <div class="welcome-badge">🎓 UPL — Université Privée de Lomé</div>
-    <h1>Questionnaire sur le Suivi des Stages</h1>
-    <p>Entrez votre numéro étudiant pour commencer. Vos réponses sont anonymes et contribuent à l'amélioration du système de suivi.</p>
-    <input type="text" class="num-input" id="num-input" placeholder="Ex: UPL2024001" maxlength="20">
-    <button class="btn-start" onclick="startQuiz()">Commencer le questionnaire →</button>
-    <div class="welcome-err" id="welcome-err"></div>
+  <div class="upl-header">
+    <div class="upl-logo-circle">UPL</div>
+    <div class="upl-header-txt">
+      <h1>Université Privée de Lomé</h1>
+      <p>Système de suivi des stages académiques</p>
+    </div>
   </div>
-  <div class="already-box" id="already-box">
-    <div class="icon">⚠️</div>
-    <h2>Déjà répondu !</h2>
-    <p>Vous avez déjà participé à ce questionnaire avec ce numéro étudiant.<br><br>Chaque étudiant ne peut répondre qu'une seule fois. Merci pour votre participation !</p>
+  <div class="welcome-body">
+    <div class="welcome-card" id="welcome-form">
+      <div class="welcome-icon">📋</div>
+      <h2>Questionnaire — Suivi des Stages</h2>
+      <p class="desc">Vous avez scanné le QR code de l'UPL. Ce questionnaire vise à améliorer le système de suivi des stages. Vos réponses sont <strong>anonymes</strong>.</p>
+      <div class="info-pills">
+        <span class="pill">📝 15 questions</span>
+        <span class="pill">⏱ ~5 minutes</span>
+        <span class="pill">🔒 Anonyme</span>
+      </div>
+      <hr class="divider">
+      <label class="num-label">🎓 Votre numéro étudiant</label>
+      <input type="text" class="num-input" id="num-input" placeholder="Ex : UPL2024001" maxlength="20">
+      <button class="btn-start" onclick="startQuiz()">Commencer le questionnaire →</button>
+      <div class="welcome-err" id="welcome-err"></div>
+    </div>
+    <div class="already-card" id="already-box">
+      <div class="icon">⚠️</div>
+      <h2>Déjà participé !</h2>
+      <p>Vous avez déjà répondu à ce questionnaire avec ce numéro étudiant.<br><br>Chaque étudiant ne peut participer qu'une seule fois. Merci pour votre contribution !</p>
+    </div>
   </div>
 </div>
 
-<!-- ===== QUESTIONNAIRE ===== -->
+<!-- QUESTIONNAIRE -->
 <div id="screen-quiz" class="screen">
-  <div class="quiz-header">
-    <h3 id="quiz-name"></h3>
-    <p>Questionnaire UPL — Suivi des stages</p>
+  <div class="upl-header">
+    <div class="upl-logo-circle">UPL</div>
+    <div class="upl-header-txt">
+      <h1>Université Privée de Lomé</h1>
+      <p>Questionnaire — Suivi des stages</p>
+    </div>
   </div>
-  <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
-  <div class="prog-info"><span id="ptxt">Question 1 / 15</span><span id="ppct">0%</span></div>
-  <div class="q-card" id="qcard"></div>
-  <div class="quiz-nav" id="quiz-nav">
-    <button class="btn-prev" id="bprev" onclick="prevQ()">← Retour</button>
-    <button class="btn-next" id="bnext" onclick="nextQ()" disabled>Suivant →</button>
+  <div class="quiz-topbar">
+    <span class="quiz-student" id="quiz-sid">Étudiant : —</span>
+    <span class="quiz-counter" id="quiz-ctr">1 / 15</span>
   </div>
-  <div class="merci-card" id="merci">
-    <div class="merci-icon">🎉</div>
-    <h2>Merci pour votre participation !</h2>
-    <p>Vos réponses ont bien été enregistrées. Elles contribuent à l'amélioration du système de suivi des stages à l'UPL.</p>
+  <div class="prog-area">
+    <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+    <div class="prog-pct" id="ppct">0%</div>
+  </div>
+  <div class="quiz-body">
+    <div class="q-card" id="qcard"></div>
+    <div class="quiz-nav" id="quiz-nav">
+      <button class="btn-prev" id="bprev" onclick="prevQ()">← Précédent</button>
+      <button class="btn-next" id="bnext" onclick="nextQ()" disabled>Suivant →</button>
+    </div>
+    <div class="merci-card" id="merci">
+      <div class="merci-icon">🎉</div>
+      <h2>Merci pour votre participation !</h2>
+      <p>Vos réponses ont bien été enregistrées. Elles contribuent à l'amélioration du système de suivi des stages à l'Université Privée de Lomé.</p>
+    </div>
   </div>
 </div>
 
-<!-- ===== DASHBOARD ===== -->
+<!-- DASHBOARD ADMIN -->
 <div id="screen-dash" class="screen">
   <div class="dash-nav">
-    <div class="logo">UPL <span>Stage</span> — Admin</div>
-    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    <div class="dash-logo">UPL <span>Stage</span> — Administration</div>
+    <button class="btn-logout" onclick="logout()">🚪 Déconnexion</button>
   </div>
   <div class="dash-body">
     <div class="dash-title">Tableau de bord</div>
-    <div class="dash-sub">Résultats complets — Questionnaire suivi des stages UPL</div>
+    <div class="dash-sub">Résultats complets — Questionnaire suivi des stages — Université Privée de Lomé</div>
 
     <div class="stats">
-      <div class="stat blue"><div class="stat-label">Réponses</div><div class="stat-val" id="s1">0</div><div class="stat-sub">étudiants</div></div>
-      <div class="stat green"><div class="stat-label">Ont fait stage</div><div class="stat-val" id="s2">—</div><div class="stat-sub">Q1 Oui</div></div>
-      <div class="stat amber"><div class="stat-label">Pro plateforme</div><div class="stat-val" id="s3">—</div><div class="stat-sub">Q10</div></div>
-      <div class="stat red"><div class="stat-label">Pb comm.</div><div class="stat-val" id="s4">—</div><div class="stat-sub">Q6</div></div>
+      <div class="stat blue"><div class="stat-lbl">Réponses totales</div><div class="stat-val" id="s1">0</div><div class="stat-sub">étudiants</div></div>
+      <div class="stat green"><div class="stat-lbl">Ont fait un stage</div><div class="stat-val" id="s2">—</div><div class="stat-sub">Q1 — Oui</div></div>
+      <div class="stat amber"><div class="stat-lbl">Pro plateforme</div><div class="stat-val" id="s3">—</div><div class="stat-sub">Q10 — Utile</div></div>
+      <div class="stat red"><div class="stat-lbl">Pb communication</div><div class="stat-val" id="s4">—</div><div class="stat-sub">Q6</div></div>
     </div>
 
-    <div class="sec-title">📊 Résultats par question</div>
+    <div class="sec-title">📊 Résultats des 15 questions</div>
     <div class="charts-grid" id="all-charts"></div>
 
-    <div class="sec-title">🔳 QR Code</div>
+    <div class="sec-title">🔳 QR Code à imprimer</div>
     <div class="qr-section">
-      <h3>QR Code du questionnaire</h3>
-      <p>Affichez ce QR code à l'UPL. Les étudiants le scannent et répondent directement depuis leur téléphone.</p>
+      <h3>QR Code du questionnaire étudiant</h3>
+      <p>Imprimez et affichez ce QR code à l'UPL. Les étudiants le scannent et accèdent directement au questionnaire sur leur téléphone.</p>
       <div id="qr-box"></div>
-      <br>
+      <div class="qr-url" id="qr-url-txt">—</div>
       <button class="btn-dl" onclick="dlQR()">⬇ Télécharger PNG</button>
     </div>
 
     <div class="sec-title">📋 Réponses individuelles</div>
     <div class="tbl-card">
       <div class="tbl-head">
-        <h3>Détail des réponses</h3>
+        <h3>Détail de toutes les réponses</h3>
         <div class="btns">
-          <button class="btn-exp" onclick="exportCSV()">⬇ CSV</button>
-          <button class="btn-clr" onclick="clearAll()">🗑 Effacer</button>
+          <button class="btn-exp" onclick="exportCSV()">⬇ Exporter CSV</button>
+          <button class="btn-clr" onclick="clearAll()">🗑 Effacer tout</button>
         </div>
       </div>
       <div class="tbl-wrap" id="tbl-wrap">
-        <div class="empty">Aucune réponse encore.</div>
+        <div class="empty"><div class="empty-icon">📋</div>Aucune réponse encore.</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const PASS = '2005gab';
-const QS = [
-  { q:"Avez-vous déjà effectué un stage académique ?", ex:"Détermine si vous avez une expérience directe du système de stage de l'UPL.", opts:["Oui","Non"] },
-  { q:"Pendant votre stage, l'entreprise semblait-elle informée des exigences et objectifs fixés par l'UPL ?", ex:"Évalue si l'UPL communique suffisamment ses attentes académiques aux entreprises d'accueil.", opts:["Tout à fait","En grande partie","Moyennement","Peu","Pas du tout"] },
-  { q:"L'UPL a-t-elle assuré un suivi de votre stage auprès de l'entreprise ?", ex:"Mesure la fréquence à laquelle l'UPL a effectué des visites ou pris contact avec l'entreprise.", opts:["Régulièrement","Occasionnellement","Rarement","Jamais"] },
-  { q:"Quel moyen utilisez-vous le plus pour communiquer avec votre encadreur ?", ex:"Identifier le canal dominant permet de proposer des outils adaptés aux habitudes réelles.", opts:["Téléphone","WhatsApp","E-mail","Rencontre physique","Autre"] },
-  { q:"Avez-vous constaté des retards dans la transmission des informations entre l'UPL et l'entreprise ?", ex:"Mesure la fréquence des retards qui peuvent impacter la qualité du stage.", opts:["Très souvent","Souvent","Rarement","Jamais"] },
-  { q:"Quels sont les principaux problèmes rencontrés lors du suivi de stage ?", ex:"Identifie les obstacles les plus fréquents pour cibler les fonctionnalités prioritaires.", opts:["Manque de communication","Retard des réponses","Absence de visites","Difficulté d'accès aux documents","Aucun problème"] },
-  { q:"Combien de fois avez-vous été visité ou contacté officiellement par votre encadreur durant le stage ?", ex:"Évalue concrètement l'intensité du suivi officiel fourni par l'encadreur académique.", opts:["Aucune fois","Une fois","Deux fois","Trois fois ou plus"] },
-  { q:"L'entreprise transmettait-elle régulièrement votre évolution à l'UPL ?", ex:"Évalue le rôle de l'entreprise dans la communication bidirectionnelle du suivi.", opts:["Toujours","Souvent","Rarement","Jamais","Je ne sais pas"] },
-  { q:"Quel support préférez-vous pour le suivi de votre stage ?", ex:"Connaître la préférence technologique guide le choix de la solution à développer.", opts:["Application mobile","Site web","Courrier électronique","Documents papier"] },
-  { q:"Une plateforme numérique de suivi des stages serait-elle utile ?", ex:"Mesure directement l'adhésion des étudiants à l'idée d'une solution numérique.", opts:["Très utile","Utile","Peu utile","Inutile"] },
-  { q:"Quels services souhaiteriez-vous retrouver dans une solution numérique de suivi ?", ex:"Les fonctionnalités souhaitées guideront la conception et les priorités de développement.", opts:["Dépôt des rapports","Messagerie avec l'encadreur","Notifications","Évaluation en ligne","Toutes les réponses ci-dessus"] },
-  { q:"Comment évaluez-vous la transmission des informations entre l'UPL et l'entreprise d'accueil ?", ex:"Évaluation globale de la qualité de communication institutionnelle vue par l'étudiant.", opts:["Très satisfaisante","Satisfaisante","Moyenne","Insatisfaisante","Très insatisfaisante"] },
-  { q:"Souhaiteriez-vous recevoir des notifications concernant l'évolution de votre dossier de stage ?", ex:"Les notifications automatiques réduisent les incertitudes et améliorent l'expérience.", opts:["Oui","Non"] },
-  { q:"Une meilleure communication entre l'UPL et l'entreprise améliorerait-elle la qualité des stages ?", ex:"Explore le lien direct entre communication institutionnelle et qualité du stage.", opts:["Tout à fait d'accord","D'accord","Neutre","Pas d'accord","Pas du tout d'accord"] },
-  { q:"Recommanderiez-vous la mise en place d'un système informatisé de suivi des stages à l'UPL ?", ex:"Mesure l'adhésion globale des étudiants à la mise en place d'un système numérique.", opts:["Certainement","Probablement","Peut-être","Probablement pas","Certainement pas"] }
+const PASS='2005gab';
+const QS=[
+  {q:"Avez-vous déjà effectué un stage académique ?",ex:"Détermine si vous avez une expérience directe du système de stage de l'UPL.",opts:["Oui","Non"]},
+  {q:"Pendant votre stage, l'entreprise semblait-elle informée des exigences et objectifs fixés par l'UPL ?",ex:"Évalue si l'UPL communique suffisamment ses attentes académiques aux entreprises d'accueil.",opts:["Tout à fait","En grande partie","Moyennement","Peu","Pas du tout"]},
+  {q:"L'UPL a-t-elle assuré un suivi de votre stage auprès de l'entreprise ?",ex:"Mesure la fréquence à laquelle l'UPL a effectué des visites ou pris contact avec l'entreprise.",opts:["Régulièrement","Occasionnellement","Rarement","Jamais"]},
+  {q:"Quel moyen utilisez-vous le plus pour communiquer avec votre encadreur ?",ex:"Identifier le canal dominant permet de proposer des outils adaptés aux habitudes réelles.",opts:["Téléphone","WhatsApp","E-mail","Rencontre physique","Autre"]},
+  {q:"Avez-vous constaté des retards dans la transmission des informations entre l'UPL et l'entreprise ?",ex:"Mesure la fréquence des retards qui peuvent impacter la qualité du stage.",opts:["Très souvent","Souvent","Rarement","Jamais"]},
+  {q:"Quels sont les principaux problèmes rencontrés lors du suivi de stage ?",ex:"Identifie les obstacles les plus fréquents pour cibler les fonctionnalités prioritaires.",opts:["Manque de communication","Retard des réponses","Absence de visites","Difficulté d'accès aux documents","Aucun problème"]},
+  {q:"Combien de fois avez-vous été visité ou contacté officiellement par votre encadreur durant le stage ?",ex:"Évalue concrètement l'intensité du suivi officiel fourni par l'encadreur académique.",opts:["Aucune fois","Une fois","Deux fois","Trois fois ou plus"]},
+  {q:"L'entreprise transmettait-elle régulièrement votre évolution à l'UPL ?",ex:"Évalue le rôle de l'entreprise dans la communication bidirectionnelle du suivi.",opts:["Toujours","Souvent","Rarement","Jamais","Je ne sais pas"]},
+  {q:"Quel support préférez-vous pour le suivi de votre stage ?",ex:"Connaître la préférence technologique guide le choix de la solution à développer.",opts:["Application mobile","Site web","Courrier électronique","Documents papier"]},
+  {q:"Une plateforme numérique de suivi des stages serait-elle utile ?",ex:"Mesure directement l'adhésion des étudiants à l'idée d'une solution numérique.",opts:["Très utile","Utile","Peu utile","Inutile"]},
+  {q:"Quels services souhaiteriez-vous retrouver dans une solution numérique de suivi ?",ex:"Les fonctionnalités souhaitées guideront la conception et les priorités de développement.",opts:["Dépôt des rapports","Messagerie avec l'encadreur","Notifications","Évaluation en ligne","Toutes les réponses ci-dessus"]},
+  {q:"Comment évaluez-vous la transmission des informations entre l'UPL et l'entreprise d'accueil ?",ex:"Évaluation globale de la qualité de communication institutionnelle vue par l'étudiant.",opts:["Très satisfaisante","Satisfaisante","Moyenne","Insatisfaisante","Très insatisfaisante"]},
+  {q:"Souhaiteriez-vous recevoir des notifications concernant l'évolution de votre dossier de stage ?",ex:"Les notifications automatiques réduisent les incertitudes et améliorent l'expérience.",opts:["Oui","Non"]},
+  {q:"Une meilleure communication entre l'UPL et l'entreprise améliorerait-elle la qualité des stages ?",ex:"Explore le lien direct entre communication institutionnelle et qualité du stage.",opts:["Tout à fait d'accord","D'accord","Neutre","Pas d'accord","Pas du tout d'accord"]},
+  {q:"Recommanderiez-vous la mise en place d'un système informatisé de suivi des stages à l'UPL ?",ex:"Mesure l'adhésion globale des étudiants à la mise en place d'un système numérique.",opts:["Certainement","Probablement","Peut-être","Probablement pas","Certainement pas"]}
 ];
 
 const COLS=['#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#F97316'];
-let cur=0, ans=Array(15).fill(null), studentNum='', studentName='';
+let cur=0, ans=Array(15).fill(null), studentNum='';
 let data=JSON.parse(localStorage.getItem('upl_r')||'[]');
 let responded=JSON.parse(localStorage.getItem('upl_done')||'[]');
 let CH={};
@@ -350,43 +412,44 @@ let CH={};
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
-// ===== LOGIN =====
+// LOGIN
 function checkPwd(){
-  const v=document.getElementById('pwd-input').value;
-  if(v===PASS){ showScreen('dash'); buildCharts(); updateDash(); genQR(); }
-  else { document.getElementById('login-err').style.display='block'; }
+  if(document.getElementById('pwd-input').value===PASS){
+    showScreen('dash'); buildCharts(); updateDash(); genQR();
+  } else {
+    document.getElementById('login-err').style.display='block';
+  }
 }
 function logout(){ document.getElementById('pwd-input').value=''; showScreen('welcome'); }
 
-// ===== WELCOME =====
+// WELCOME
 function startQuiz(){
   const num=document.getElementById('num-input').value.trim().toUpperCase();
   const err=document.getElementById('welcome-err');
-  if(!num){ err.textContent='⚠️ Veuillez entrer votre numéro étudiant.'; err.style.display='block'; return; }
-  if(num.length<4){ err.textContent='⚠️ Numéro étudiant invalide.'; err.style.display='block'; return; }
+  if(!num||num.length<3){ err.textContent='⚠️ Veuillez entrer votre numéro étudiant.'; err.style.display='block'; return; }
   if(responded.includes(num)){
     document.getElementById('welcome-form').style.display='none';
     document.getElementById('already-box').style.display='block';
     return;
   }
-  studentNum=num;
-  cur=0; ans=Array(15).fill(null);
-  document.getElementById('quiz-name').textContent='Étudiant : '+num;
-  showScreen('quiz');
-  renderQ();
+  studentNum=num; cur=0; ans=Array(15).fill(null);
+  document.getElementById('quiz-sid').textContent='Étudiant : '+num;
+  showScreen('quiz'); renderQ();
 }
 
-// ===== QUIZ =====
+// QUIZ
 function renderQ(){
   const q=QS[cur];
-  const pct=Math.round(cur/QS.length*100);
+  // 100% seulement quand soumis, sinon progression normale
+  const pct=Math.round((cur/(QS.length))*100);
   document.getElementById('pfill').style.width=pct+'%';
-  document.getElementById('ptxt').textContent=`Question ${cur+1} / ${QS.length}`;
+  document.getElementById('quiz-ctr').textContent=(cur+1)+' / '+QS.length;
   document.getElementById('ppct').textContent=pct+'%';
   document.getElementById('qcard').innerHTML=`
-    <div class="q-num-tag">Question ${cur+1} / ${QS.length}</div>
+    <div class="q-tag">Question ${cur+1} sur ${QS.length}</div>
     <div class="q-text">${q.q}</div>
     <div class="q-exp">ℹ️ ${q.ex}</div>
     <div class="opts">${q.opts.map(o=>`
@@ -396,7 +459,7 @@ function renderQ(){
     </div>`;
   document.getElementById('bprev').style.display=cur===0?'none':'block';
   const bn=document.getElementById('bnext');
-  bn.textContent=cur===QS.length-1?'✅ Soumettre':'Suivant →';
+  bn.textContent=cur===QS.length-1?'✅ Soumettre mes réponses':'Suivant →';
   bn.disabled=!ans[cur];
 }
 
@@ -411,9 +474,13 @@ function nextQ(){ if(!ans[cur])return; if(cur<QS.length-1){cur++;renderQ();}else
 function prevQ(){ if(cur>0){cur--;renderQ();} }
 
 function submit(){
+  // Barre à 100% à la fin
+  document.getElementById('pfill').style.width='100%';
+  document.getElementById('ppct').textContent='100%';
+  document.getElementById('quiz-ctr').textContent='15 / 15';
+
   const r={id:Date.now(),num:studentNum,date:new Date().toLocaleDateString('fr-FR'),time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),a:[...ans]};
-  data.push(r);
-  responded.push(studentNum);
+  data.push(r); responded.push(studentNum);
   localStorage.setItem('upl_r',JSON.stringify(data));
   localStorage.setItem('upl_done',JSON.stringify(responded));
   document.getElementById('qcard').style.display='none';
@@ -421,13 +488,11 @@ function submit(){
   document.getElementById('merci').classList.add('show');
 }
 
-// ===== DASHBOARD =====
+// DASHBOARD
 function buildCharts(){
-  const c=document.getElementById('all-charts');
-  c.innerHTML='';
+  const c=document.getElementById('all-charts'); c.innerHTML='';
   QS.forEach((_,i)=>{
-    const d=document.createElement('div');
-    d.className='chart-card';
+    const d=document.createElement('div'); d.className='chart-card';
     d.innerHTML=`<div class="ch-qnum">Question ${i+1}</div><div class="ch-qtxt">${QS[i].q}</div><canvas id="ch${i}"></canvas>`;
     c.appendChild(d);
   });
@@ -444,18 +509,17 @@ function updateDash(){
     const counts=q.opts.map(o=>data.filter(r=>r.a[i]===o).length);
     const useBar=q.opts.length>=4;
     if(CH[i])CH[i].destroy();
-    const ctx=document.getElementById('ch'+i);
-    if(!ctx)return;
+    const ctx=document.getElementById('ch'+i); if(!ctx)return;
     CH[i]=new Chart(ctx.getContext('2d'),{
       type:useBar?'bar':'doughnut',
-      data:{labels:q.opts,datasets:[{data:counts,backgroundColor:useBar?COLS[i%COLS.length]:COLS,borderRadius:useBar?8:0,borderWidth:useBar?0:3,borderColor:'#fff'}]},
+      data:{labels:q.opts,datasets:[{data:counts,backgroundColor:useBar?COLS[i%COLS.length]:COLS,borderRadius:useBar?6:0,borderWidth:useBar?0:3,borderColor:'#fff'}]},
       options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:!useBar,position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}},scales:useBar?{y:{beginAtZero:true,ticks:{stepSize:1,font:{family:'DM Sans',size:11}},grid:{color:'#F0F5FF'}},x:{ticks:{font:{family:'DM Sans',size:10},maxRotation:30},grid:{display:false}}}:{}}
     });
   });
   renderTable();
 }
 
-function renderEmpty(){ document.getElementById('tbl-wrap').innerHTML='<div class="empty">Aucune réponse encore.</div>'; }
+function renderEmpty(){ document.getElementById('tbl-wrap').innerHTML='<div class="empty"><div class="empty-icon">📋</div>Aucune réponse enregistrée pour le moment.</div>'; }
 
 function renderTable(){
   if(!data.length){renderEmpty();return;}
@@ -468,23 +532,24 @@ function renderTable(){
 
 function clearAll(){
   if(!confirm('Effacer toutes les réponses ? Irréversible.'))return;
-  data=[]; responded=[];
-  localStorage.removeItem('upl_r'); localStorage.removeItem('upl_done');
+  data=[];responded=[];
+  localStorage.removeItem('upl_r');localStorage.removeItem('upl_done');
   updateDash();
 }
 
 function exportCSV(){
-  if(!data.length){alert('Aucune donnée.');return;}
-  const h=['#','N° Étudiant','Date','Heure',...QS.map((_,i)=>`"Q${i+1}"`).join(',')].join(',');
+  if(!data.length){alert('Aucune donnée à exporter.');return;}
+  const h=['#','N° Étudiant','Date','Heure',...QS.map((_,i)=>`"Q${i+1} - ${QS[i].q.substring(0,40)}"`)].join(',');
   const rows=data.map((r,i)=>[i+1,r.num,r.date,r.time,...r.a.map(v=>`"${v||''}"`)].join(','));
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([[h,...rows].join('\n')],{type:'text/csv;charset=utf-8;'}));
-  a.download='upl_stages.csv'; a.click();
+  a.download='upl_stages_resultats.csv'; a.click();
 }
 
-// ===== QR =====
+// QR
 function genQR(){
   const url=window.location.origin+window.location.pathname;
+  document.getElementById('qr-url-txt').textContent=url;
   document.getElementById('qr-box').innerHTML='';
   new QRCode(document.getElementById('qr-box'),{text:url,width:200,height:200,colorDark:'#0F2044',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
 }
@@ -495,7 +560,7 @@ function dlQR(){
   },400);
 }
 
-// ===== ACCÈS ADMIN (URL ?admin) =====
+// INIT
 if(new URLSearchParams(window.location.search).get('admin')!==null){
   showScreen('login');
 }
