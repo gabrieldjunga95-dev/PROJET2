@@ -441,6 +441,7 @@ tbody tr:hover td { background:#F5FAF6; }
 
 <script>
 const PASS='2005gab';
+const SHEET_URL='https://script.google.com/macros/s/AKfycby0Cm5GkPqAkR65djJkdyjLSJg440V8hX7-QPtGbYQiSYv1zefBlzPZaKjMBfa2juCpiA/exec';
 const QS=[
   {q:"Avez-vous déjà effectué un stage académique ?",ex:"Détermine si vous avez une expérience directe du système de stage de l'UPL.",opts:["Oui","Non"]},
   {q:"Pendant votre stage, l'entreprise semblait-elle informée des exigences et objectifs fixés par l'UPL ?",ex:"Évalue si l'UPL communique suffisamment ses attentes académiques aux entreprises d'accueil.",opts:["Tout à fait","En grande partie","Moyennement","Peu","Pas du tout"]},
@@ -522,9 +523,19 @@ function submit(){
   data.push(r); done.push(sNum);
   localStorage.setItem('upl_r',JSON.stringify(data));
   localStorage.setItem('upl_d',JSON.stringify(done));
+  sendToSheets(r);
   document.getElementById('qcard').style.display='none';
   document.getElementById('qnav').style.display='none';
   document.getElementById('merci').classList.add('show');
+}
+
+function sendToSheets(r){
+  fetch(SHEET_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(r)
+  }).catch(err=>console.log('Sheets error:',err));
 }
 
 // DASHBOARD
