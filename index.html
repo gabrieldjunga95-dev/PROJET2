@@ -441,7 +441,7 @@ tbody tr:hover td { background:#F5FAF6; }
 
 <script>
 const PASS='2005gab';
-const SHEET_URL='https://script.google.com/macros/s/AKfycby0Cm5GkPqAkR65djJkdyjLSJg440V8hX7-QPtGbYQiSYv1zefBlzPZaKjMBfa2juCpiA/exec';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbymIKZk670gX96m-4aAjyxyMWZ7ImjFb9tlwIB9dIbAAwcF1sv4dsrFWkD3xLRDn_ciBw/exec';
 const QS=[
   {q:"Avez-vous déjà effectué un stage académique ?",ex:"Détermine si vous avez une expérience directe du système de stage de l'UPL.",opts:["Oui","Non"]},
   {q:"Pendant votre stage, l'entreprise semblait-elle informée des exigences et objectifs fixés par l'UPL ?",ex:"Évalue si l'UPL communique suffisamment ses attentes académiques aux entreprises d'accueil.",opts:["Tout à fait","En grande partie","Moyennement","Peu","Pas du tout"]},
@@ -469,7 +469,7 @@ let CH={};
 function go(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+id).classList.add('active'); window.scrollTo(0,0); }
 
 // LOGIN
-function doLogin(){ if(document.getElementById('pwd').value===PASS){ go('dash'); buildC(); updDash(); genQR(); } else document.getElementById('login-err').style.display='block'; }
+function doLogin(){ if(document.getElementById('pwd').value===PASS){ go('dash'); buildC(); loadFromSheets(); genQR(); } else document.getElementById('login-err').style.display='block'; }
 function doLogout(){ document.getElementById('pwd').value=''; go('welcome'); }
 
 // WELCOME
@@ -539,6 +539,19 @@ function sendToSheets(r){
 }
 
 // DASHBOARD
+function loadFromSheets(){
+  document.getElementById("sv1").textContent="⏳";
+  fetch(SHEET_URL)
+    .then(r=>r.json())
+    .then(rows=>{
+      data=rows;
+      updDash();
+    })
+    .catch(err=>{
+      console.log("Sheets read error:",err);
+      updDash();
+    });
+}
 function buildC(){
   const w=document.getElementById('charts-wrap'); w.innerHTML='';
   QS.forEach((_,i)=>{
