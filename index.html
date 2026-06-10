@@ -399,8 +399,8 @@ tbody tr:hover td { background:#F5FAF6; }
 <!-- DASHBOARD -->
 <div id="screen-dash" class="screen">
   <div class="dash-nav">
-    <div class="dash-nav-logo">UPL <em>Stage</em> — Administration</div>
-    <button class="btn-out" onclick="doLogout()">🚪 Déconnexion</button>
+    <div class="dash-nav-logo">UPL <em>Stage</em> — Administration <span id="refresh-ind" style="font-size:0.7rem;color:var(--sage);margin-left:8px;"></span></div>
+    <button onclick="loadFromSheets()" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);padding:6px 12px;border-radius:8px;font-family:Outfit,sans-serif;font-size:0.78rem;cursor:pointer;margin-right:8px;">🔄 Actualiser</button><button class="btn-out" onclick="doLogout()">🚪 Déconnexion</button>
   </div>
   <div class="dash-body">
     <div class="page-title">Tableau de bord</div>
@@ -469,8 +469,11 @@ let CH={};
 function go(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+id).classList.add('active'); window.scrollTo(0,0); }
 
 // LOGIN
-function doLogin(){ if(document.getElementById('pwd').value===PASS){ go('dash'); buildC(); loadFromSheets(); genQR(); } else document.getElementById('login-err').style.display='block'; }
-function doLogout(){ document.getElementById('pwd').value=''; go('welcome'); }
+let refreshTimer=null;
+function doLogin(){ if(document.getElementById('pwd').value===PASS){ go('dash'); buildC(); loadFromSheets(); genQR(); startAutoRefresh(); } else document.getElementById('login-err').style.display='block'; }
+function startAutoRefresh(){ stopAutoRefresh(); refreshTimer=setInterval(()=>loadFromSheets(),15000); }
+function stopAutoRefresh(){ if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;} }
+function doLogout(){ document.getElementById('pwd').value=''; stopAutoRefresh(); go('welcome'); }
 
 // WELCOME
 function goQuiz(){
@@ -540,6 +543,9 @@ function sendToSheets(r){
 
 // DASHBOARD
 function loadFromSheets(){
+  const ind=document.getElementById('refresh-ind');
+  if(ind)ind.textContent='⏳ Chargement...';
+  const t=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById("sv1").textContent="⏳";
   fetch(SHEET_URL)
     .then(r=>r.json())
